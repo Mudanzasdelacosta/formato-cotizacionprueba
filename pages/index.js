@@ -1,5 +1,4 @@
 import { useState } from "react";
-import html2pdf from "html2pdf.js";
 
 export default function Home() {
   const [formData, setFormData] = useState({
@@ -32,8 +31,14 @@ export default function Home() {
   };
 
   const generatePDF = () => {
-    const element = document.getElementById("formulario-preview");
-    html2pdf().from(element).save("cotizacion.pdf");
+    if (typeof window !== "undefined") {
+      import("html2pdf.js").then((html2pdf) => {
+        const element = document.getElementById("formulario-preview");
+        if (element) {
+          html2pdf.default().from(element).save("cotizacion.pdf");
+        }
+      });
+    }
   };
 
   return (
@@ -62,7 +67,10 @@ export default function Home() {
         ))}
         <input type="file" name="fotos" multiple accept="image/*" onChange={handleChange} className="border p-2" />
       </div>
-      <button onClick={generatePDF} className="bg-blue-600 text-white px-4 py-2 mt-4">Generar PDF</button>
+
+      <button onClick={generatePDF} className="bg-blue-600 text-white px-4 py-2 mt-4">
+        Generar PDF
+      </button>
 
       <div id="formulario-preview" className="p-6 bg-white mt-6 border rounded">
         <h2 className="text-lg font-semibold mb-2">Vista previa</h2>
